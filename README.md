@@ -9,10 +9,10 @@ Este é um projeto de interface front-end realista e interativa de um cartão de
 Aqui está o visual do cartão gerado pelo código:
 
 ### Face Frontal (Tema Visa)
-![Frente do Cartão](https://unsplash.com)
+![Frente do Cartão](https://unsplash.com) (./images/frente.png)
 
 ### Face Traseira (Com Tarja e CVV)
-![Verso do Cartão](https://unsplash.com)
+![Verso do Cartão](https://unsplash.com) (./images/verso.png)
 
 > *Nota: Você pode substituir as imagens acima tirando um print da sua própria tela rodando o projeto no VS Code!*
 
