@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cartão Interativo Inteligente</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="card-container">
+        <!-- O container principal agora inicia com a classe 'visa-theme' por padrão -->
+        <div class="card-flip-wrapper visa-theme" id="creditCard">
+            
+            <!-- Face Frontal -->
+            <div class="card-face card-front">
+                <div class="chip"></div>
+                <div class="card-number" id="viewNumber">•••• •••• •••• ••••</div>
+                <div class="card-details">
+                    <div>
+                        <div class="label">Titular do Cartão</div>
+                        <div class="value" id="viewName">NOME DO TITULAR</div>
+                    </div>
+                    <div>
+                        <div class="label">Validade</div>
+                        <div class="value" id="viewExpiry">MM/AA</div>
+                    </div>
+                    <div class="brand" id="viewBrand">VISA</div>
+                </div>
+            </div>
+
+            <!-- Face Traseira -->
+            <div class="card-face card-back">
+                <div class="black-bar"></div>
+                <div class="signature-area">
+                    <div class="label" style="text-align: right; margin-right: 5px;">CVV</div>
+                    <div class="cvv-box" id="viewCVV">•••</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Formulário -->
+    <div class="form-container">
+        <form autocomplete="off" onsubmit="event.preventDefault();">
+            <div class="form-group">
+                <label for="inputNumber">Número do Cartão</label>
+                <input type="text" id="inputNumber" maxlength="19" placeholder="0000 0000 0000 0000">
+            </div>
+            
+            <div class="form-group">
+                <label for="inputName">Nome do Titular</label>
+                <input type="text" id="inputName" maxlength="22" placeholder="Ex: JOÃO S SILVA">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group" style="flex: 1;">
+                    <label for="inputExpiry">Validade</label>
+                    <input type="text" id="inputExpiry" maxlength="5" placeholder="MM/AA">
+                </div>
+                
+                <div class="form-group" style="flex: 1;">
+                    <label for="inputCVV">CVV</label>
+                    <input type="text" id="inputCVV" maxlength="4" placeholder="000">
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
