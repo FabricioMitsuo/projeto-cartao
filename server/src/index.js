@@ -3,23 +3,40 @@ import cors from 'cors';
 import bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { config } from './config.js';
-import { getItem, putItem, updateItem, TABLES } from './db/dynamo.js';
+import { getItem as getItemDdb, putItem as putItemDdb, updateItem as updateItemDdb, TABLES } from './db/dynamo.js';
+import { getItem as getItemFallback, putItem as putItemFallback, updateItem as updateItemFallback, TABLES as TABLES_FALLBACK } from './fallback/db.js';
+
 import { createProducer, createConsumer } from './mq/kafka.js';
 import { topics } from './mq/topics.js';
 import { SQSClient, SendMessageCommand, ReceiveMessageCommand, DeleteMessageCommand } from '@aws-sdk/client-sqs';
 import { sendNotification, sendChatMessage } from './services/notifications.js';
 import { verifyMfa, startMfa } from './services/mfa.js';
 
+import { resetDemoData, state as fallbackState } from './fallback/db.js';
+import { bus, topics as fallbackTopics } from './fallback/bus.js';
+import { setupFallbackWorkers } from './fallback/integration.js';
+import { notificationsQueue } from './fallback/queue.js';
+
+
+const USE_FALLBACK = true;
+
+
+
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const sqs = new SQSClient({
-  endpoint: config.sqs.endpoint,
-  region: config.sqs.region
-});
+let sqs = null;
+let queueUrl = null;
 
-const queueUrl = config.sqs.queueUrl;
+if (!USE_FALLBACK) {
+  sqs = new SQSClient({
+    endpoint: config.sqs.endpoint,
+    region: config.sqs.region
+  });
+  queueUrl = config.sqs.queueUrl;
+}
+
 
 function requireAuth(req, res, next) {
   const auth = req.headers.authorization || '';
@@ -144,8 +161,20 @@ app.post('/api/pix/limit', requireAuth, async (req, res) => {
     await putItem(TABLES.Accounts, { userId, pixLimit: limit, checkingBalance: 1000 });
   });
 
+  if (USE_FALLBACK) {
+    bus.emit(topics.accountEvents, {
+      type: 'PIX_LIMIT_CHANGED',
+      userId,
+      newLimit: limit,
+      correlationId,
+      createdAt: Date.now()
+    });
+    return res.json({ ok: true, correlationId });
+  }
+
   // publica evento Kafka
   const producer = await createProducer();
+
   await producer.send({
     topic: topics.accountEvents,
     messages: [
@@ -314,6 +343,12 @@ async function seed() {
 app.listen(config.PORT, async () => {
   console.log(`[server] listening on :${config.PORT}`);
   await seed();
-  await startWorkers();
+
+  if (USE_FALLBACK) {
+    setupFallbackWorkers();
+  } else {
+    await startWorkers();
+  }
 });
+
 

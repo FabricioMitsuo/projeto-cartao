@@ -1,31 +1,31 @@
-# TODO - Projeto Banco Digital (Kafka + DynamoDB + ElasticMQ)
+# TODO - Transformar em React Native (Expo)
 
 ## Passo 1
-- [x] Criar estrutura do backend Node.js em `server/`
-- [x] Implementar API REST: login, MFA, estado, alterar limite PIX, consignado, investimentos
-
+- [ ] Criar uma nova pasta `mobile/` com projeto **Expo (React Native)**
+- [ ] Configurar estrutura `src/` (screens, api client, auth state)
 
 ## Passo 2
-- [ ] Configurar DynamoDB local (dynamodb-local) e criar helpers para CRUD
+- [ ] Implementar fluxo Login + MFA
+  - [ ] `POST /api/auth/login`
+  - [ ] `POST /api/auth/mfa/verify`
+  - [ ] Guardar `sessionId` no estado (ex: AsyncStorage)
 
 ## Passo 3
-- [ ] Configurar Kafka via `docker-compose.yml`
-- [ ] Implementar produtor de eventos e worker/consumer para enriquecer eventos
+- [ ] Implementar Dashboard
+  - [ ] `GET /api/state` com `Authorization: Bearer <sessionId>`
 
 ## Passo 4
-- [ ] Configurar ElasticMQ (SQS local) via `docker-compose.yml`
-- [ ] Implementar fila de notificações e worker para enviar notificações (simuladas)
+- [ ] Implementar tela/ação de Alterar limite PIX
+  - [ ] `POST /api/pix/limit` com `newLimit`
 
 ## Passo 5
-- [ ] Implementar autenticação (sessions) e MFA (OTP) persistidos no DynamoDB
+- [ ] (Opcional) Adicionar endpoints no backend para listar notificações/chat
+  - [ ] `GET /api/notifications`
+  - [ ] `GET /api/chat`
+  - [ ] Tornar fallback `state.notifications` consumível
 
 ## Passo 6
-- [ ] Atualizar front (`index.html`, `script.js`, `style.css`) para dashboard do banco digital
-- [ ] Implementar fluxo: login -> MFA -> dashboard -> alterar limite PIX -> exibir notificações/chat
-
-## Passo 7
-- [ ] Criar `README.md` com comandos para subir ambiente e testar fluxo
-
-## Passo 8
-- [ ] Rodar testes manuais: login/MFA, alterar limite PIX (inclui violação), visualização no dashboard
+- [ ] Rodar e testar localmente
+  - [ ] Backend: `npm run dev` no `server/`
+  - [ ] Mobile: `expo start` no `mobile/`
 
