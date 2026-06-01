@@ -227,6 +227,24 @@ input:focus { border-color: #58a6ff; }
     gap: 12px;
 }
 
+.card-extra { margin-top: 16px; }
+
+.card-extra-row { display: flex; justify-content: space-between; gap: 12px; }
+
+.invest-container { margin-top: 18px; padding: 15px 0 0 0; }
+.invest-title { color: #8b949e; font-weight: bold; margin-bottom: 10px; }
+
+.limit-alert {
+    margin-top: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #da3637;
+    background: rgba(218,54,55,0.12);
+    color: #f85149;
+    font-size: 0.9rem;
+    line-height: 1.35;
+}
+
 .storage-item {
     background-color: #0f111a;
     padding: 12px;
@@ -237,6 +255,7 @@ input:focus { border-color: #58a6ff; }
     align-items: center;
     font-size: 0.85rem;
 }
+
 
 .storage-info span {
     display: block;

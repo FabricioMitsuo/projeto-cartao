@@ -32,6 +32,19 @@
                             </div>
                             <div class="brand" id="viewBrand">VISA</div>
                         </div>
+
+                        <div class="card-extra">
+                            <div class="card-extra-row">
+                                <div>
+                                    <div class="label">Conta Corrente</div>
+                                    <div class="value" id="viewAccount">0000-0</div>
+                                </div>
+                                <div>
+                                    <div class="label">Limite (Fictício)</div>
+                                    <div class="value" id="viewLimit">R$ 50.000</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <!-- Face Traseira -->
                     <div class="card-face card-back">
@@ -74,6 +87,25 @@
                         <button type="submit" class="btn btn-submit" id="btnSubmit">Salvar Cartão</button>
                     </div>
                 </form>
+
+                <!-- Investimentos (demo) -->
+                <div class="invest-container" id="investContainer">
+                    <div class="invest-title">📈 Investir (demo)</div>
+                    <div class="form-group">
+                        <label for="inputInvest">Valor do investimento</label>
+                        <input type="text" id="inputInvest" maxlength="12" placeholder="Ex: 1000" inputmode="numeric">
+                    </div>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-clear" id="btnInvest">Investir</button>
+                        <button type="button" class="btn btn-submit" id="btnIncreaseLimit" style="display:none;">Aumentar limite</button>
+                    </div>
+
+                    <div class="limit-alert" id="limitAlert" style="display:none;">
+                        ⚠️ Seu investimento excedeu o limite fictício.
+                        <br>
+                        Você pode aumentar o limite para continuar com investimentos futuros.
+                    </div>
+                </div>
             </div>
         </div>
 

@@ -16,6 +16,15 @@ const viewName = document.getElementById('viewName');
 const viewExpiry = document.getElementById('viewExpiry');
 const viewCVV = document.getElementById('viewCVV');
 const viewBrand = document.getElementById('viewBrand');
+const viewAccount = document.getElementById('viewAccount');
+const viewLimit = document.getElementById('viewLimit');
+
+// Investimentos (demo)
+const inputInvest = document.getElementById('inputInvest');
+const btnInvest = document.getElementById('btnInvest');
+const btnIncreaseLimit = document.getElementById('btnIncreaseLimit');
+const limitAlert = document.getElementById('limitAlert');
+
 
 // Carrega os dados armazenados assim que a página abre
 document.addEventListener('DOMContentLoaded', displayStoredCards);
@@ -88,9 +97,17 @@ function resetFormAndCard() {
     viewName.innerText = 'NOME DO TITULAR';
     viewExpiry.innerText = 'MM/AA';
     viewCVV.innerText = '•••';
+    viewAccount.innerText = '0000-0';
+    viewLimit.innerText = 'R$ 50.000';
+
+    inputInvest.value = '';
+    btnIncreaseLimit.style.display = 'none';
+    limitAlert.style.display = 'none';
+
     card.classList.remove('flipped');
     updateCardBrand('');
 }
+
 
 // SALVAR INFORMAÇÕES (Sem persistir o CVV)
 cardForm.addEventListener('submit', (e) => {
@@ -101,8 +118,15 @@ cardForm.addEventListener('submit', (e) => {
         number: inputNumber.value,
         name: inputName.value,
         expiry: inputExpiry.value,
-        brand: updateCardBrand(inputNumber.value)
+        brand: updateCardBrand(inputNumber.value),
+        account: generateAccountFicticio(),
+        limit: 50000 // limite fictício inicial
     };
+
+    // Atualiza a UI do cartão atual imediatamente
+    viewAccount.innerText = newCard.account;
+    viewLimit.innerText = formatBRL(newCard.limit);
+
 
     // Puxa a lista existente do localStorage ou cria uma nova se estiver vazia
     const cards = JSON.parse(localStorage.getItem('savedCards')) || [];
@@ -118,9 +142,22 @@ cardForm.addEventListener('submit', (e) => {
 });
 
 // EXIBIR E RENDERIZAR CARTÕES DO HISTÓRICO
+function formatBRL(value) {
+    const num = Number(value) || 0;
+    return 'R$ ' + num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+function generateAccountFicticio() {
+    // Ex: 1234-5 (apenas demo)
+    const base = Math.floor(1000 + Math.random() * 9000).toString();
+    const digit = Math.floor(Math.random() * 10);
+    return `${base}-${digit}`;
+}
+
 function displayStoredCards() {
     storageList.innerHTML = '';
     const cards = JSON.parse(localStorage.getItem('savedCards')) || [];
+
 
     if (cards.length === 0) {
         storageList.innerHTML = '<li style="color: #8b949e; font-size: 0.85rem; text-align: center;">Nenhum cartão salvo ainda.</li>';
@@ -130,13 +167,14 @@ function displayStoredCards() {
     cards.forEach(c => {
         // Mascara o número do cartão para exibir apenas os 4 últimos dígitos por segurança
         const hiddenNumber = `•••• •••• •••• ${c.number.slice(-4)}`;
-        
+
         const li = document.createElement('li');
         li.className = 'storage-item';
         li.innerHTML = `
             <div class="storage-info">
                 <strong>${hiddenNumber}</strong>
                 <span>${c.name} | Val: ${c.expiry} (${c.brand})</span>
+                <span>Conta: ${c.account || '0000-0'} | Limite: ${formatBRL(c.limit || 0)}</span>
             </div>
             <button class="btn-delete-item" onclick="deleteCard(${c.id})">Excluir</button>
         `;
@@ -152,3 +190,69 @@ window.deleteCard = function(id) {
     localStorage.setItem('savedCards', JSON.stringify(cards));
     displayStoredCards();
 };
+
+function getActiveCard() {
+    // Para simplificar o demo, usa o último cartão salvo como "cartão ativo".
+    const cards = JSON.parse(localStorage.getItem('savedCards')) || [];
+    return cards.length ? cards[cards.length - 1] : null;
+}
+
+function setActiveCard(updatedCard) {
+    const cards = JSON.parse(localStorage.getItem('savedCards')) || [];
+    if (!cards.length) return;
+
+    // Substitui pelo id (caso existam múltiplos)
+    const idx = cards.findIndex(c => c.id === updatedCard.id);
+    if (idx === -1) return;
+
+    cards[idx] = updatedCard;
+    localStorage.setItem('savedCards', JSON.stringify(cards));
+    displayStoredCards();
+}
+
+function updateLimitUI(limit) {
+    viewLimit.innerText = formatBRL(limit);
+}
+
+function showLimitExceededUI() {
+    limitAlert.style.display = 'block';
+    btnIncreaseLimit.style.display = 'block';
+}
+
+function hideLimitExceededUI() {
+    limitAlert.style.display = 'none';
+    btnIncreaseLimit.style.display = 'none';
+}
+
+btnInvest.addEventListener('click', () => {
+    const card = getActiveCard();
+    if (!card) return;
+
+    const investment = Number(String(inputInvest.value).replace(/\D/g, '')) || 0;
+    if (investment <= 0) return;
+
+    if (investment > (card.limit || 0)) {
+        showLimitExceededUI();
+        return;
+    }
+
+    // Sucesso (demo): investimento "aprovado" sem persistir investimentos
+    hideLimitExceededUI();
+    alert('✅ Investimento aprovado (demo).');
+    inputInvest.value = '';
+});
+
+btnIncreaseLimit.addEventListener('click', () => {
+    const card = getActiveCard();
+    if (!card) return;
+
+    const additional = 50000;
+    const nextLimit = (card.limit || 0) + additional;
+    const updated = { ...card, limit: nextLimit };
+
+    setActiveCard(updated);
+    updateLimitUI(updated.limit);
+    hideLimitExceededUI();
+    alert('🎉 Limite aumentado com sucesso! Você já pode fazer investimentos futuros.');
+});
+
