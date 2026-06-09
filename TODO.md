@@ -1,28 +1,30 @@
-# TODO - Dashboard Conta Corrente + Pix + Investimentos + Extrato + Notificações (Web + Flutter)
+# TODO - App Cartão + Face Login (AWS Rekognition)
 
-- [x] Card: conta corrente + limite fictício 50.000 + mensagem de excedeu + CTA aumentar limite
+## Planejamento aprovado
+- [x] Levantar entendimento do repositório e UI atual (localStorage)
+- [x] Confirmar que o objetivo é **Face Login direto** (sem OTP)
 
-## Web (index.html + script.js + style.css)
-- [ ] Criar UI de **app** dentro do web com **abas**: Conta Corrente / Pix / Investimentos / Extrato / Notificações
-- [ ] Conectar abas a endpoints reais quando existir backend:
-  - [ ] `GET /api/state` para saldo/limite/investimentos
-  - [ ] `POST /api/pix/limit` para alterar limite Pix
-  - [ ] `POST /api/investments` para registrar investimentos
-- [ ] Implementar seções UI (mock quando endpoint não existir):
-  - [ ] Criar chave-pix
-  - [ ] Contatos Pix
-  - [ ] Pix cola
-  - [ ] QR Pix
-- [ ] Implementar Extrato detalhado (demo inicial e hook para endpoint real depois)
-- [ ] Implementar Notificações (buscar lista quando existir; demo atual se necessário)
+## Etapas de implementação
+1. [ ] Criar tela de Face Login no `index.html/script.js` e bloquear dashboard até autenticar.
+2. [ ] Implementar endpoint de sessão/face no backend (`server/src/index.js`) substituindo o MFA por Face Verified.
+3. [ ] Criar service Rekognition (`server/src/services/rekognition.js`) com:
+   - [ ] CreateCollection (1x, se necessário)
+   - [ ] IndexFaces/Index (register)
+   - [ ] SearchFacesByImage (verify)
+4. [x] Criar endpoints de face:
+   - [ ] `POST /api/face/register` (opcional para cadastrar)
+   - [ ] `POST /api/face/verify` (fluxo de autenticação)
 
-## Flutter (mobile passo a passo)
-- [ ] Criar projeto Flutter em `mobile/`
-- [ ] Implementar telas equivalentes às abas (com services prontos)
-- [ ] Consumir backend (quando estiver disponível) via HTTP
+5. [ ] Atualizar persistência de cartões: substituir `localStorage` por endpoints REST e salvar em DynamoDB.
+6. [ ] Garantir que o cartão fica **sempre visível** após autenticar (mas com mascaramento no UI).
+7. [ ] Atualizar README com passo a passo AWS Rekognition.
+8. [ ] Criar workflows do GitHub Actions (build/test).
+9. [ ] Criar instruções “subir para GitHub” (passo a passo) e fluxo de dados no GitHub.
 
-## Testes
-- [ ] Rodar backend e garantir que a UI web carrega `/api/state`
-- [ ] Validar fluxo limite excedeu / aumentar limite
-- [ ] Validar Pix limit update
+## Checklist de validação
+- [ ] Rodar `docker compose up -d`
+- [ ] Rodar backend `cd server && npm install && npm run dev`
+- [ ] Testar Face Login (modo demo/mocked, se AWS não estiver configurado)
+- [ ] Cadastrar cartão e listar do dashboard
+- [ ] Disparar fluxo Pix limit (Kafka->SQS->notificações) mantendo conta/logado
 
